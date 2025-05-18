@@ -1,5 +1,3 @@
-##TODO - Add seed function separately. 
-
 import os
 import random
 import numpy as np
