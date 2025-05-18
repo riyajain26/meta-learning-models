@@ -124,11 +124,11 @@ class WriteHead(nn.Module):
 
         # LRU: Identify least-used memory slot (lowest usage weight)
         _, indices = torch.topk(prev_usage_weights, k=1, largest=False)     # Shape: (B, 1)
-        write_weights_lru = F.one_hot(indices.squeeze(1), num_classes=self.memory.N).float()    # Shape: (B, N)
+        prev_write_weights_lru = F.one_hot(indices.squeeze(1), num_classes=self.memory.N).float()    # Shape: (B, N)
 
         # Compute gated write weights between read weights and LRU weights
         sigma_alpha = self.sigmoid(alpha)       # Shape: (B, 1)
-        write_weights = sigma_alpha*prev_read_weights[:,0] + (1-sigma_alpha)*write_weights_lru  # Shape: (B, N)
+        write_weights = sigma_alpha*prev_read_weights[:,0] + (1-sigma_alpha)*prev_write_weights_lru  # Shape: (B, N)
 
         # Prepare for memory update
         write_weights = write_weights.unsqueeze(2)      # Shape: (B, N, 1)
