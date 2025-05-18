@@ -4,10 +4,12 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
+
 from maml.core.eeg_cnn import EEGCNN
 from maml.core.eeg_meta_dataset import EEGMetaDataset
 from maml.core.train import maml_train
 from maml.core.test import maml_test
+from maml.utils.utils import set_seed
 
 
 def load_config(config_path):
@@ -35,6 +37,7 @@ def load_data(metadata_path, test_size=0.2, random_state=42):
 
 
 def main(config):
+    set_seed(42)
     # Select device: use GPU if available, else CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
