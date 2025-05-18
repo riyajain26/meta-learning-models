@@ -115,7 +115,6 @@ def main(config):
         raise ValueError("Mode must be either 'train' or 'test'.")
 
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run MANN with EEG Data using YAML Config")
     parser.add_argument("--config", type=str, required=True, help="Path to YAML config file")

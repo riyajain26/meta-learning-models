@@ -1,6 +1,6 @@
 # Dataset and Training Configuration
-metadata_csv: "data/metadata.csv"
-data_dir: "data/eeg_data"
+metadata_csv: "datasets/experiment1/metadata.csv"
+data_dir: "datasets/experiment1/eeg_data"
 test_size: 0.2
 random_seed: 42
 

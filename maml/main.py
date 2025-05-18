@@ -32,16 +32,13 @@ def load_data(metadata_path, test_size=0.2, random_state=42):
     return train_df, test_df
 
 
-
-
-
-
 def main(config):
-    set_seed(42)
+    set_seed(config.get("random_seed", 42))
+    
     # Select device: use GPU if available, else CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
-    train_df, test_df = load_data(config['metadata_path'], test_size=config['test_split'])
+    train_df, test_df = load_data(config['metadata_csv'], test_size=config['test_size'])
 
     # Initialize the EEG classification model
     # Parameters: number of classes, number of EEG channels, length of EEG time series
@@ -58,7 +55,7 @@ def main(config):
         train_meta_dataset = EEGMetaDataset(
             df=train_df,
             data_dir=config['data_dir'],
-            num_tasks=config['num_tasks'],
+            num_tasks=config['num_tasks_train'],
             k_shot=config['k_shot'],
             q_query=config['q_query']
         )
@@ -89,7 +86,7 @@ def main(config):
         test_meta_dataset = EEGMetaDataset(
             df=test_df,
             data_dir=config['data_dir'],
-            num_tasks=config['num_tasks'],
+            num_tasks=config['num_tasks_test'],
             k_shot=config['k_shot'],
             q_query=config['q_query']
         )
@@ -99,7 +96,6 @@ def main(config):
             model, 
             test_meta_dataset,
             device, 
-            epochs=config["epochs"],
             inner_steps=config["inner_steps"],
             inner_lr=config["inner_lr"]
         )

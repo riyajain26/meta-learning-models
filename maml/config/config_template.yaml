@@ -1,19 +1,23 @@
-# General setup
-mode: train                # train or test
-metadata_path: datasets/experiment1/metadata.csv
-data_dir: dataset/experiment1/eeg_data
-test_split: 0.2
-k_shot: 1
-q_query: 1
+# Dataset and Training configuration
+metadata_csv: "data/metadata.csv"
+data_dir: "data/eeg_data"
+test_size: 0.2
+random_seed: 42
 
-# Model configuration
+# EEG Signal/Model Parameters
 num_classes: 4
 in_channels: 22
 input_time: 1875
 
+# Meta-dataset Parameters
+k_shot: 1
+q_query: 1
+
 # Training configuration
+mode: train                # train or test
 epochs: 100
-num_tasks: 10
+num_tasks_train: 10
+num_tasks_test: 5
 inner_steps: 1
 inner_lr: 0.01
 meta_lr: 0.001
