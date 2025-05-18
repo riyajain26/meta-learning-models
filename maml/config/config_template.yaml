@@ -1,0 +1,23 @@
+# General setup
+mode: train                # train or test
+metadata_path: datasets/experiment1/metadata.csv
+data_dir: dataset/experiment1/eeg_data
+test_split: 0.2
+k_shot: 1
+q_query: 1
+
+# Model configuration
+num_classes: 4
+in_channels: 22
+input_time: 1875
+
+# Training configuration
+epochs: 100
+num_tasks: 10
+inner_steps: 1
+inner_lr: 0.01
+meta_lr: 0.001
+
+# Model save/load
+save_model: checkpoints/maml_eeg.pth
+load_model: checkpoints/maml_eeg.pth  # only used in test mode
