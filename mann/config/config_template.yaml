@@ -1,0 +1,32 @@
+# Dataset and Training Configuration
+metadata_csv: "data/metadata.csv"
+data_dir: "data/eeg_data"
+test_size: 0.2
+random_seed: 42
+
+# EEG Signal Parameters
+in_channels: 22
+input_time: 1875
+num_classes: 4
+
+# Model Parameters
+embedding_dim: 128
+hidden_size: 200
+memory_size: 128
+word_size: 40
+num_read_heads: 4
+
+# Meta-dataset Parameters
+num_tasks_train: 10
+num_tasks_test: 5
+k_shot: 1
+q_query: 1
+
+# Training configuration
+mode: train
+epochs: 100
+learning_rat: 0.001
+
+# Model save/load
+save_model: checkpoints/mann_eeg.pth
+load_model: checkpoints/mann_eeg.pth  # only used in test mode
