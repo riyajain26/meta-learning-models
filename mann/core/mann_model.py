@@ -82,12 +82,16 @@ class MANN(nn.Module):
             keys = keys.view(B, self.num_read_heads+1, self.word_size)
             read_keys = keys[:, :self.num_read_heads]       # for read heads
             write_key = keys[:, -1]                         # for write head
-            
+
+            # Store previous read_weights and usage_weights for write_weight updates 
+            prev_read_weights = read_weights
+            prev_usage_weights = usage_weights
+
             # Perform read from memory
             read_vector_t, read_weights = self.read_head(read_keys)     # Shape: (B, n, W) and (B, n, N)
 
             # Perform write to memory
-            write_weights = self.write_head(write_key, read_weights, usage_weights, self.alpha)
+            write_weights = self.write_head(write_key, prev_read_weights, prev_usage_weights, self.alpha)
 
             # Update memory usage weights with decay + read + write influence
             usage_weights = (self.gamma * usage_weights) + torch.sum(read_weights, dim=1) + write_weights
