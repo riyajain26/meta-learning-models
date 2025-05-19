@@ -81,6 +81,7 @@ def main(config):
         mann_train(
             model,
             train_meta_dataset,
+            device,
             epochs=config["epochs"],
             lr=config["learning_rate"]
         )
@@ -108,7 +109,8 @@ def main(config):
         # Test the model on unseen data
         mann_test(
             model,
-            test_meta_dataset
+            test_meta_dataset,
+            device
         )
     
     else:

@@ -1,6 +1,6 @@
 # Dataset and Training Configuration
-metadata_csv: "datasets/experiment1/metadata.csv"
-data_dir: "datasets/experiment1/eeg_data"
+metadata_csv: "datasets/dummy_exp2/metadata.csv"
+data_dir: "datasets/dummy_exp2/"
 test_size: 0.2
 random_seed: 42
 
@@ -23,9 +23,9 @@ k_shot: 1
 q_query: 1
 
 # Training configuration
-mode: train
+mode: test
 epochs: 100
-learning_rat: 0.001
+learning_rate: 0.001
 
 # Model save/load
 save_model: checkpoints/mann_eeg.pth
