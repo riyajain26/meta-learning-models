@@ -23,7 +23,6 @@ k_shot: 1
 q_query: 1
 
 # Training configuration
-mode: test
 epochs: 100
 learning_rate: 0.001
 

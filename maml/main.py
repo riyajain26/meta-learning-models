@@ -32,7 +32,9 @@ def load_data(metadata_path, test_size=0.2, random_state=42):
     return train_df, test_df
 
 
-def main(config):
+def main(args):
+    config = load_config(args.config)
+    mode = args.mode
     set_seed(config.get("random_seed", 42))
     
     # Select device: use GPU if available, else CPU
@@ -49,7 +51,7 @@ def main(config):
         ).to(device)
 
 
-    if config['mode'] == 'train':
+    if mode == 'train':
         # Create meta-learning dataset for training
         # num_tasks specifies how many tasks (batches) are sampled per epoch
         train_meta_dataset = EEGMetaDataset(
@@ -75,7 +77,7 @@ def main(config):
             torch.save(model.state_dict(), config["save_model"])
             print(f"Model saved to {config['save_model']}")
 
-    elif config["mode"] == "test":
+    elif mode == "test":
         if config.get("load_model") is None:
             raise ValueError("Please provide 'load_model' path in config for test mode.")
 
@@ -106,8 +108,7 @@ def main(config):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run MAML with EEG Data using YAML Config")
+    parser.add_argument('--mode', type=str, required=True, choices=['train', 'test'], help='Mode: train or test')
     parser.add_argument("--config", type=str, required=True, help="Path to YAML config file")
     args = parser.parse_args()
-
-    config = load_config(args.config)
-    main(config)
+    main(args)
