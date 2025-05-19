@@ -25,15 +25,15 @@ def mann_test(model, test_meta_dataset, device, loss_fn=nn.CrossEntropyLoss()):
     with torch.no_grad():
         for task in test_meta_dataset:
             # Unpack the meta-task: support and query sets: K = N_way*K_shot, Q = N_way*Q_query, and L = input_time length
-            support_x, support_y, query_x, query_y = task   # Shapes: (1, K, C, L) and (1, K) and (1, Q, C, L) and (1, Q)
+            support_x, support_y, query_x, query_y = task   # Shapes: (K, C, L) and (K) and (Q, C, L) and (Q)
 
-            # Reshape and send data to the device
-            support_x = support_x.permute(1,0,2,3).to(device)   # Shape: (K, 1, C, L)
-            support_y = support_y.permute(1,0).to(device)       # Shape: (K, 1)
+            # Reshape and send data to the device - setting batch = 1 
+            support_x = support_x.unsqueeze(1).to(device)   # Shape: (K, 1, C, L)
+            support_y = support_y.unsqueeze(1).to(device)       # Shape: (K, 1)
             support_y = F.one_hot(support_y, num_classes=num_classes).float()   # Shape: (K, 1, num_classes)
             
-            query_x = query_x.permute(1,0,2,3).to(device)       # Shape: (Q, 1, C, L)
-            query_y = query_y.permute(1,0).to(device)           # Shape: (Q, 1)
+            query_x = query_x.unsqueeze(1).to(device)       # Shape: (Q, 1, C, L)
+            query_y = query_y.unsqueeze(1).to(device)           # Shape: (Q, 1)
             query_y = F.one_hot(query_y, num_classes=num_classes).float()       # Shape: (Q, 1, num_classes)
             
             # Combine support and query into one sequence for MANN
