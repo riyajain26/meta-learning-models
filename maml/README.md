@@ -32,7 +32,7 @@ MAML optimizes for a model initialization that can quickly adapt to new tasks us
 - **Inner loop**: Adapts model parameters to a specific task.
 - **Outer loop**: Updates the initialization based on performance across tasks.
 
-This code implements the Algorithm 2 based on [original paper](https://arxiv.org/pdf/1703.03400).
+The implementation is based on Algorithm 2 described in the [original paper](https://arxiv.org/pdf/1703.03400).
 
 ## Directory Structure
 
@@ -45,7 +45,6 @@ maml/
 ├── README.md # This file
 ```
 
-
 ## Implementation Details
 
 This implementation of MAML has been adapted for EEG signal classification. The main components are organized as follows:
@@ -53,7 +52,7 @@ This implementation of MAML has been adapted for EEG signal classification. The 
 ### core/eeg_cnn.py
 
 - Defines the model whose initial parameter are learnt that can be fine-tuned quickly on new unseen tasks.
-- Defines the CNN-based feature extractor used for EEG signals. 
+- Defines the CNN-based classifier used for EEG signals. 
 - A different model can be built and used for EEG classification (if needed). 
 - The model architecture is lightweight and designed to capture spatiotemporal features from EEG input data.
 - It supports customization for the number of EEG channels and time steps.
@@ -61,10 +60,10 @@ This implementation of MAML has been adapted for EEG signal classification. The 
 
 ### core/eeg_meta_dataset.py
 
-- Creates a meta-dataset from EEG recordings suitable for few-shot learning.
-- Defines tasks with support and query splits per class.
-- Reads EEG samples and labels from .npy files and metadata.csv.
-- Easily extensible for different EEG datasets.
+- Defines the data loading pipeline for few-shot EEG classification.
+- Dynamically samples tasks (episodes) from the dataset with N classes and K support/Q query examples per class.
+- Provides support and query sets for each task to train and evaluate MAML.
+- Supports EEG .npy files and loads labels and participant/session metadata from metadata.csv.
 
 ### core/train.py
 
@@ -100,7 +99,6 @@ Modify/Create the YAML files in the config/ directory to adjust parameters/hyper
 - Training configuration
 - Model save/load information
 
-
 ## Usage
 
 ### Training
@@ -121,9 +119,6 @@ It supports any type of EEG dataset with consistent shape (channels, time_steps)
 
 Make sure to add `metadata.csv` that contains information about eeg_samples (.npy), lables, and participants. A few dummy datasets have been added for the reference.
 
-
 ## References
 
 Finn, C., Abbeel, P., & Levine, S. (2017). [Model-Agnostic Meta-Learning for Fast Adaptation of Deep Networks](https://arxiv.org/pdf/1703.03400)
-
-
