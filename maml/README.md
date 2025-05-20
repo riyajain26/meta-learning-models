@@ -10,10 +10,8 @@ This implementation is part of the `meta-learning-models` project.
 - [Algorithm](#algorithm)
 - [Directory Structure](#directory-structure)
 - [Implementation Detials](#implementation-details)
-- [Installation](#installation)
 - [Configuration](#configuration)
 - [Usage](#usage)
-- [Dataset](#dataset)
 - [References](#references)
 
 
@@ -82,14 +80,6 @@ This implementation of MAML has been adapted for EEG signal classification. The 
 - Evaluates performance on corresponding query sets.
 - Reports per-task and averaged classification loss.
 
-## Installation
-
-```bash
-git clone https://github.com/riyajain26/meta-learning-models.git
-cd meta-learning-models
-pip install -r requirements.txt
-```
-
 ## Configuration
 
 Modify/Create the YAML files in the config/ directory to adjust parameters/hyperparameters like:
@@ -112,12 +102,6 @@ python3 -m maml.main --mode train --config maml/config/config_template.yaml
 ```bash
 python3 -m maml.main --mode test --config maml/config/config_template.yaml
 ```
-
-## Dataset
-
-It supports any type of EEG dataset with consistent shape (channels, time_steps) across datapoints. The datasets are stored in `datasets/` directory. 
-
-Make sure to add `metadata.csv` that contains information about eeg_samples (.npy), lables, and participants. A few dummy datasets have been added for the reference.
 
 ## References
 
