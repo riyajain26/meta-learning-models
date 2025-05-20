@@ -14,7 +14,6 @@ k_shot: 1
 q_query: 1
 
 # Training configuration
-mode: test           # train or test
 epochs: 100
 num_tasks_train: 10
 num_tasks_test: 5
