@@ -4,12 +4,12 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-from matching_networks.core.eeg_embedding import EEGEmbeddingNet
-from matching_networks.core.eeg_meta_dataset import EEGMetaDataset
-from matching_networks.core.matching_network import MatchingNetwork
-from matching_networks.core.train import matching_network_train
-from matching_networks.core.test import matching_network_test
-from matching_networks.utils.utils import set_seed
+from matching_network.core.eeg_embedding import EEGEmbeddingNet
+from matching_network.core.eeg_meta_dataset import EEGMetaDataset
+from matching_network.core.matching_network import MatchingNetwork
+from matching_network.core.train import matching_network_train
+from matching_network.core.test import matching_network_test
+from matching_network.utils.utils import set_seed
 
 
 def load_config(config_path):

@@ -17,6 +17,7 @@ Each algorithm is adapted to handle EEG signals and is organized into its own su
 |-------|-------------|-----------|
 | **MAML** | Model-Agnostic Meta-Learning. Learns a good initialization that can be fine-tuned with a few gradient steps. | [`maml/`](./maml) |
 | **MANN** | Memory-Augmented Neural Network. Uses an external memory module with an LSTM controller for one-shot learning. | [`mann/`](./mann) |
+| **Matching Network** | Matching Network. Metric-based model using cosine similarity and attention over support embeddings to classify queries. | [`matching_network/`](./matching_network) |
 
 Each model has its own README file with in-depth documentation on usage, architecture, and references.
 
@@ -26,6 +27,7 @@ Each model has its own README file with in-depth documentation on usage, archite
 meta-learning-models/
 ├── maml/ # MAML implementation
 ├── mann/ # MANN implementation
+├── matching_network/ # Matching Network implementation
 ├── datasets/ # EEG data and metadata
 ├── checkpoints/ # Save checkpoints
 ├── requirements.txt # Python dependencies

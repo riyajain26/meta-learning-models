@@ -2,8 +2,8 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from matching_networks.core.attention import Attention
-from matching_networks.core.similarity import CosineSimilarity
+from matching_network.core.attention import Attention
+from matching_network.core.similarity import CosineSimilarity
 
 
 class MatchingNetwork(nn.Module):
