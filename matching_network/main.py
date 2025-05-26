@@ -4,7 +4,7 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-from matching_network.core.eeg_embedding import EEGEmbeddingNet
+from matching_network.core.eeg_encoder import EEGEmbeddingNet
 from matching_network.core.eeg_meta_dataset import EEGMetaDataset
 from matching_network.core.matching_network import MatchingNetwork
 from matching_network.core.train import matching_network_train
