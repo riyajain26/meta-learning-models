@@ -2,27 +2,27 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-class EEGEncoder(nn.Module):
+class EEGEmbeddingNet(nn.Module):
     """
     EEG Encoder for learning compact feature embeddings from EEG signals.
 
     It is designed to encode EEG signals into a fixed-size embedding. 
     It transforms an input EEG signal of shape (batch_size, in_channels, input_time) 
-    into a feature vector of dimension `output_dim`.
+    into a feature vector of dimension `embedding_dim`.
 
     This encoder can be used as a feature extractor for tasks such as few-shot learning
     with MANNs or other downstream classification tasks.
     """
-    def __init__(self, output_dim=128, in_channels=22, input_time=1875):
+    def __init__(self, embedding_dim=128, in_channels=22, input_time=1875):
         """
-        Initializes the EEGEncoder.
+        Initializes the EEGEmbeddingNet.
 
         Args:
-            output_dim (int): Dimension of the final embedding output.
+            embedding_dim (int): Dimension of the final embedding output.
             in_channels (int): Number of EEG channels in the input (default: 22).
             input_time (int): Length of the input time series per channel (default: 1875).
         """
-        super(EEGEncoder, self).__init__()
+        super(EEGEmbeddingNet, self).__init__()
         
         # Layer 1: Conv1D + BatchNorm + MaxPooling
         # Input:  (B, 22, 1875)
@@ -51,18 +51,18 @@ class EEGEncoder(nn.Module):
 
         # Fully connected layer to produce feature embeddings
         # Input:  (B, 128)
-        # Output: (B, output_dim)
-        self.fc = nn.Linear(128, output_dim)
+        # Output: (B, embedding_dim)
+        self.fc = nn.Linear(128, embedding_dim)
 
     def forward(self, x):
         """
-        Forward pass of the EEGEncoder.
+        Forward pass of the EEGEmbeddingNet.
 
         Args:
             x (Tensor): Input tensor of shape (B, in_channels, input_time)
 
         Returns:
-            Tensor: Feature embedding of shape (B, output_dim)
+            Tensor: Feature embedding of shape (B, embedding_dim)
         """
 
         # Pass through first convolutional block
@@ -81,4 +81,4 @@ class EEGEncoder(nn.Module):
         x = x.view(x.size(0), -1)       # Flatten to shape (B, 128)
         x = self.fc(x)          
         
-        return x                        # Returns shape: (B, output_dim)
+        return x                        # Returns shape: (B, embedding_dim)
