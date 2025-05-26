@@ -4,18 +4,18 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-
-from maml.core.eeg_cnn import EEGCNN
-from maml.core.eeg_meta_dataset import EEGMetaDataset
-from maml.core.train import maml_train
-from maml.core.test import maml_test
-from maml.utils.utils import set_seed
+from matching_networks.core.eeg_embedding import EEGEmbeddingNet
+from matching_networks.core.eeg_meta_dataset import EEGMetaDataset
+from matching_networks.core.matching_network import MatchingNetwork
+from matching_networks.core.train import matching_network_train
+from matching_networks.core.test import matching_network_test
+from matching_networks.utils.utils import set_seed
 
 
 def load_config(config_path):
     with open(config_path, 'r') as f:
         return yaml.safe_load(f)
-
+    
 
 def load_data(metadata_path, test_size=0.2, random_state=42):
     # Load metadata CSV containing EEG recordings info (participant, labels, file paths, etc.)
@@ -35,21 +35,27 @@ def load_data(metadata_path, test_size=0.2, random_state=42):
 def main(args):
     config = load_config(args.config)
     mode = args.mode
+
     set_seed(config.get("random_seed", 42))
-    
-    # Select device: use GPU if available, else CPU
+
+     # Select device: use GPU if available, else CPU
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
     train_df, test_df = load_data(config['metadata_csv'], test_size=config['test_size'])
+    
+    # EEG encoder
+    eeg_encoder = EEGEmbeddingNet(
+        embedding_dim=config["embedding_dim"],
+        in_channels=config["in_channels"],
+        input_time=config["input_time"]
+    )
 
-    # Initialize the EEG classification model
-    # Parameters: number of classes, number of EEG channels, length of EEG time series
-    model = EEGCNN(
-        num_classes=config['num_classes'], 
-        in_channels=config['in_channels'], 
-        input_time=config['input_time']
-        ).to(device)
-
+    # Matching Network
+    model = MatchingNetwork(
+        encoder = eeg_encoder, 
+        embedding_dim=config["embedding_dim"], 
+        num_classes=config["num_classes"]
+    )
 
     if mode == 'train':
         # Create meta-learning dataset for training
@@ -62,22 +68,20 @@ def main(args):
             q_query=config['q_query']
         )
 
-        # Train the model using the MAML algorithm over specified epochs
-        maml_train(
-            model, 
+         # Train the model using the Matching Network algorithm over specified epochs
+        matching_network_train(
+            model,
             train_meta_dataset,
-            device, 
+            device,
             epochs=config["epochs"],
-            inner_steps=config["inner_steps"],
-            inner_lr=config["inner_lr"],
-            meta_lr=config["meta_lr"]
+            lr=config["learning_rate"]
         )
-        
+
         if config.get("save_model"):
             torch.save(model.state_dict(), config["save_model"])
             print(f"Model saved to {config['save_model']}")
 
-    elif mode == "test":
+    elif mode == 'test':
         if config.get("load_model") is None:
             raise ValueError("Please provide 'load_model' path in config for test mode.")
 
@@ -94,20 +98,18 @@ def main(args):
         )
 
         # Test the model on unseen data
-        maml_test(
-            model, 
+        matching_network_test(
+            model,
             test_meta_dataset,
-            device, 
-            inner_steps=config["inner_steps"],
-            inner_lr=config["inner_lr"]
+            device
         )
-
+    
     else:
         raise ValueError("Mode must be either 'train' or 'test'.")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run MAML with EEG Data using YAML Config")
+    parser = argparse.ArgumentParser(description="Run Matching Network with EEG Data using YAML Config")
     parser.add_argument('--mode', type=str, required=True, choices=['train', 'test'], help='Mode: train or test')
     parser.add_argument("--config", type=str, required=True, help="Path to YAML config file")
     args = parser.parse_args()

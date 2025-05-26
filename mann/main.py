@@ -4,7 +4,7 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-from mann.core.eeg_encoder import EEGEncoder
+from mann.core.eeg_embedding import EEGEmbeddingNet
 from mann.core.eeg_meta_dataset import EEGMetaDataset
 from mann.core.mann_model import MANN, MANNWrapper
 from mann.core.train import mann_train
@@ -23,7 +23,7 @@ def load_data(metadata_path, test_size=0.2, random_state=42):
 
     # Get unique participants and split into train/test groups (80% train, 20% test)
     participants = df['participant'].unique()
-    train_participants, test_participants = train_test_split(participants, test_size=0.2, random_state=42)
+    train_participants, test_participants = train_test_split(participants, test_size=test_size, random_state=random_state)
 
     # Filter the DataFrame to create train and test DataFrames based on participant splits
     train_df = df[df['participant'].isin(train_participants)]
@@ -44,8 +44,8 @@ def main(args):
     train_df, test_df = load_data(config['metadata_csv'], test_size=config['test_size'])
     
     # EEG encoder
-    eeg_encoder = EEGEncoder(
-        output_dim=config["embedding_dim"],
+    eeg_encoder = EEGEmbeddingNet(
+        embedding_dim=config["embedding_dim"],
         in_channels=config["in_channels"],
         input_time=config["input_time"]
     )
