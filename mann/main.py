@@ -4,7 +4,7 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-from mann.core.eeg_embedding import EEGEmbeddingNet
+from mann.core.eeg_encoder import EEGEmbeddingNet
 from mann.core.eeg_meta_dataset import EEGMetaDataset
 from mann.core.mann_model import MANN, MANNWrapper
 from mann.core.train import mann_train
