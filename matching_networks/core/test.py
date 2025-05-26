@@ -6,46 +6,49 @@ import torch.optim as optim
 
 def matching_network_test(model, test_meta_dataset, device, loss_fn=nn.CrossEntropyLoss()):
     """
-    Evaluate the Matching Network model on a meta-test dataset.
+    Evaluates the Matching Network model on a set of meta-test tasks.
 
     Args:
-        model: Trained meta-learning model with a Matching Network architecture.
-        test_meta_dataset: Meta-test dataset (few-shot task episodes).
-        loss_fn: Loss function (default: CrossEntropyLoss).
+        model (nn.Module): Trained Matching Network model.
+        test_meta_dataset (Iterable): Meta-test dataset, where each task is a (support_x, support_y, query_x, query_y) tuple.
+        device (torch.device): Device to run the evaluation on (e.g., 'cuda' or 'cpu').
+        loss_fn (Callable): Loss function to compute evaluation loss (default: CrossEntropyLoss).
 
     Returns:
-        Tuple of (average loss, average accuracy) across all test tasks.
+        float: Average loss across all meta-test tasks.
     """
 
+    # Move model to target device and switch to evaluation mode
     model.to(device)
     model.eval()
 
     total_loss = 0.0
-    total_tasks = len(test_meta_dataset)
+    total_tasks = len(test_meta_dataset)        # Total number of tasks for evaluation
 
+    # Disable gradient computation for evaluation (saves memory and computations)
     with torch.no_grad():
         for task in test_meta_dataset:
             # Unpack the meta-task: support and query sets: K = N_way*K_shot, Q = N_way*Q_query, and L = input_time length
             support_x, support_y, query_x, query_y = task   # Shapes: (K, C, L) and (K) and (Q, C, L) and (Q)
 
-            # Reshape and send data to the device - setting batch = 1 
+            # Move tensors to the correct device
             support_x = support_x.to(device)        # Shape: (K, C, L)
             support_y = support_y.to(device)        # Shape: (K,)
-            #support_y = F.one_hot(support_y, num_classes=num_classes).float()   # Shape: (K, num_classes)
-            
             query_x = query_x.to(device)            # Shape: (Q, C, L)
             query_y = query_y.to(device)            # Shape: (Q,)
-            #query_y = F.one_hot(query_y, num_classes=num_classes).float()       # Shape: (Q, num_classes)
             
-            # Forward pass through the wrapper model
-            logits = model(support_x, support_y, query_x)      # Shape: (T=K+Q, num_classes)
+            # === Forward Pass ===
+            # The model takes support set and query set to compute class predictions for queries
+            logits = model(support_x, support_y, query_x)      # Shape: (Q, num_classes)
 
-            # Compute loss
+            # === Loss Computation ===
+            # CrossEntropyLoss expects logits and target labels (not one-hot)
             loss = loss_fn(logits, query_y)
 
+            # Accumulate total loss
             total_loss += loss.item()
 
-    # Epoch statistics
+    # Average loss over all meta-tasks
     avg_loss = total_loss / total_tasks
         
     print(f"Test Loss: {avg_loss:.4f}")

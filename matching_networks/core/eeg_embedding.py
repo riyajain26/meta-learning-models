@@ -11,7 +11,7 @@ class EEGEmbeddingNet(nn.Module):
     into a feature vector of dimension `embedding_dim`.
 
     This encoder can be used as a feature extractor for tasks such as few-shot learning
-    with MANNs or other downstream classification tasks.
+    with Matching Networks or other downstream classification tasks.
     """
     def __init__(self, embedding_dim=128, in_channels=22, input_time=1875):
         """

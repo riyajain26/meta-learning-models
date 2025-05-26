@@ -7,7 +7,7 @@ from torch.utils.data import Dataset
 
 class EEGMetaDataset(Dataset):
     """
-    Meta-learning dataset for EEG data, designed for MANN (same as MAML).
+    Meta-learning dataset for EEG data, designed for Matching Networks (same as MAML, MANN).
     
     Each sample (task) consists of:
     - A support set (used for adaptation)
