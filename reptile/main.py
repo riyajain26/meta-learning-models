@@ -5,11 +5,11 @@ import yaml
 from sklearn.model_selection import train_test_split
 
 
-from maml.core.eeg_cnn import EEGCNN
-from maml.core.eeg_meta_dataset import EEGMetaDataset
-from maml.core.train import maml_train
-from maml.core.test import maml_test
-from maml.utils.utils import set_seed
+from reptile.core.eeg_cnn import EEGCNN
+from reptile.core.eeg_meta_dataset import EEGMetaDataset
+from reptile.core.train import reptile_train
+from reptile.core.test import reptile_test
+from reptile.utils.utils import set_seed
 
 
 def load_config(config_path):
@@ -62,8 +62,8 @@ def main(args):
             q_query=config['q_query']
         )
 
-        # Train the model using the MAML algorithm over specified epochs
-        maml_train(
+        # Train the model using the REPTILE algorithm over specified epochs
+        reptile_train(
             model, 
             train_meta_dataset,
             device, 
@@ -94,7 +94,7 @@ def main(args):
         )
 
         # Test the model on unseen data
-        maml_test(
+        reptile_test(
             model, 
             test_meta_dataset,
             device, 
@@ -107,7 +107,7 @@ def main(args):
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Run MAML with EEG Data using YAML Config")
+    parser = argparse.ArgumentParser(description="Run REPTILE with EEG Data using YAML Config")
     parser.add_argument('--mode', type=str, required=True, choices=['train', 'test'], help='Mode: train or test')
     parser.add_argument("--config", type=str, required=True, help="Path to YAML config file")
     args = parser.parse_args()
