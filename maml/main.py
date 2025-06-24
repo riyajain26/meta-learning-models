@@ -4,8 +4,9 @@ import argparse
 import yaml
 from sklearn.model_selection import train_test_split
 
-
+from maml.core.eeg_encoder import EEGEmbeddingNet
 from maml.core.eeg_cnn import EEGCNN
+from maml.core.maml_model import MAMLWrapper
 from maml.core.eeg_meta_dataset import EEGMetaDataset
 from maml.core.train import maml_train
 from maml.core.test import maml_test
@@ -44,11 +45,27 @@ def main(args):
 
     # Initialize the EEG classification model
     # Parameters: number of classes, number of EEG channels, length of EEG time series
-    model = EEGCNN(
+    if config["embedding"] == "true":
+        # EEG encoder
+        eeg_encoder = EEGEmbeddingNet(
+            embedding_dim=config["embedding_dim"],
+            in_channels=config["in_channels"],
+            input_time=config["input_time"]
+        )
+        
+        model = MAMLWrapper(
+            eeg_encoder=eeg_encoder,
+            embedding_dim=config["embedding_dim"],
+            num_classes=config["num_classes"],
+            device=device
+        )
+    else:
+        model = EEGCNN(
         num_classes=config['num_classes'], 
         in_channels=config['in_channels'], 
         input_time=config['input_time']
-        ).to(device)
+        )
+        
 
 
     if mode == 'train':
