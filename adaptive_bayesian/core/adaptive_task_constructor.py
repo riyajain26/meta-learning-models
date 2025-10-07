@@ -191,10 +191,6 @@ class AdaptiveTaskConstructor(nn.Module):
         # For training, we use weighted selection
         # For inference, we use binary selection
         if training:
-            # Weight each sample by its selection probability
-            # This maintains differentiability
-            selected_indices = torch.arange(support_pool_data.size(0), 
-                                          device=support_pool_data.device)
             # We'll return all data but with weights for the downstream network
             selected_data = support_pool_data
             selected_labels = support_pool_labels
