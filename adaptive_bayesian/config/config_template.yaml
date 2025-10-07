@@ -1,0 +1,8 @@
+# Dataset and Training Configuration
+random_seed: 42
+
+# EEG Signal Parameters
+in_channels: 22
+time_length: 1875
+num_classes: 4
+
