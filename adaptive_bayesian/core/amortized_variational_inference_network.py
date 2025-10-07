@@ -185,7 +185,6 @@ class AmortizedVariationalInference(nn.Module):
             support_labels: (N,)
             query_representation: (feature_dim,) or (batch_size, feature_dim)
             selection_weights: (N,) - optional weights from adaptive selection
-            return_uncertainty: if True, return multiple predictions for uncertainty
         Returns:
             logits: prediction logits
             theta_mean: mean of task-specific parameters (optional)
@@ -208,5 +207,5 @@ class AmortizedVariationalInference(nn.Module):
             logits_samples.append(logits)
             
         # Stack and return all samples
-        logits = torch.stack(logits_samples)  # (n_samples, num_classes) or (n_samples, batch_size, num_classes)
+        logits = torch.stack(logits_samples).mean(dim=0)  # (num_classes,) or (batch_size, num_classes)
         return logits, theta_mean, theta_logvar

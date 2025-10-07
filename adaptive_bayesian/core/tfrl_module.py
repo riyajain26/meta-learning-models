@@ -52,6 +52,7 @@ class TimeFrequencyVAE(nn.Module):
         self.num_classes = num_classes
         self.feature_dim = latent_dim * 2           #Concatenate z_T and z_F
         self.freq_bins = (time_length//2) + 1       #rfft bins
+        self.device = device
 
         # Shared Encoder for both Time- and Frequency-domain
         self.shared_encoder = SharedEncoder(in_channels, time_length, hidden_dim) # (B, hidden_dim)
@@ -158,14 +159,14 @@ class TimeFrequencyVAE(nn.Module):
         batch_size = x.size(0)
         
         # Encode
-        z_T_mean, z_T_logvar, z_F_mean, z_F_logvar = self.encode(x)
+        z_T_mean, z_T_logvar, z_F_mean, z_F_logvar = self.encode(x)     # (B/N, latent_dim) : all
         
         # Sample latent variables
-        z_T = self.reparameterize(z_T_mean, z_T_logvar)
-        z_F = self.reparameterize(z_F_mean, z_F_logvar)
+        z_T = self.reparameterize(z_T_mean, z_T_logvar)                 # (B/N, latent_dim)    
+        z_F = self.reparameterize(z_F_mean, z_F_logvar)                 # (B/N, latent_dim)
         
         # Decode
-        x_T_recon, x_F_recon = self.decode(z_T, z_F)
+        x_T_recon, x_F_recon = self.decode(z_T, z_F)                    # (B/N, in_channels, time_length) and (B/N, in_channels, freq_bins)
         
         # Concatenate for final representation
         z = torch.cat([z_T, z_F], dim=1)  # (batch_size, latent_dim*2)
@@ -219,18 +220,18 @@ class TimeFrequencyVAE(nn.Module):
         return z, losses
 
 
-    """def get_representation(self, x):
-        """"""
+    def get_representation(self, x):
+        """
         Get representation without computing losses (for inference)
         Args:
             x: (batch_size, n_channels, time_length)
         Returns:
             z: (batch_size, latent_dim*2)
-        """"""
+        """
         with torch.no_grad():
             z_T_mean, _, z_F_mean, _ = self.encode(x)
             z = torch.cat([z_T_mean, z_F_mean], dim=1)
-        return z"""
+        return z
 
 
 
