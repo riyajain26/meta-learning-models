@@ -3,7 +3,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 from adaptive_bayesian.core.adaptive_task_constructor import AdaptiveTaskConstructor
 from adaptive_bayesian.core.amortized_variational_inference_network import AmortizedVariationalInference
-from adaptive_bayesian.core.tfrl_module import TimeFrequencyEncoder
+from adaptive_bayesian.core.tfrl_module import TimeFrequencyVAE
 
 class ABML(nn.Module):
     """
@@ -39,7 +39,7 @@ class ABML(nn.Module):
         self.feature_dim = latent_dim * 2  # Concatenated time and frequency
         
         # Component 1: Time-Frequency Encoder
-        self.encoder = TimeFrequencyEncoder(
+        self.encoder = TimeFrequencyVAE(
             in_channels=in_channels,
             time_length=time_length,
             latent_dim=latent_dim,
