@@ -10,7 +10,7 @@ class AdaptiveTaskConstructor(nn.Module):
     based on query sample characteristics
     """
 
-    def __init__(self, feature_dim=128, meta_param_rank=32, temperature_init=1.0, temperature_min=0.1, device=None):
+    def __init__(self, feature_dim=128, meta_param_rank=32, temperature_init=1.0, temperature_min=0.1):
         """
         Args:
             feature_dim: Dimension of time-frequency representation (128)
@@ -24,7 +24,6 @@ class AdaptiveTaskConstructor(nn.Module):
         self.meta_param_rank = meta_param_rank
         self.temperature = temperature_init
         self.temperature_min = temperature_min
-        self.device = device
         
         # Low-rank factorization matrices P and Q
         # ε_k = P · D(z̃_k) · Q
@@ -40,7 +39,7 @@ class AdaptiveTaskConstructor(nn.Module):
             nn.Linear(128, feature_dim * 2)
         )
 
-        # Optional: Add a small learnable bias for the selection function
+        # Learnable bias for the selection function
         self.selection_bias = nn.Parameter(torch.zeros(1))
 
     def generate_meta_parameters(self, query_representation):
@@ -184,18 +183,13 @@ class AdaptiveTaskConstructor(nn.Module):
         if training:
             # Use Gumbel soft selection during training
             selection_mask = self.gumbel_reparameterization(probabilities)
-        else:
-            # Use hard threshold during inference
-            selection_mask = (probabilities > hard_threshold).float()
-        
-        # For training, we use weighted selection
-        # For inference, we use binary selection
-        if training:
             # We'll return all data but with weights for the downstream network
             selected_data = support_pool_data
             selected_labels = support_pool_labels
             selected_representations = support_pool_representations
         else:
+            # Use hard threshold during inference
+            selection_mask = (probabilities > hard_threshold).float()
             # Hard selection for inference
             selected_indices = torch.where(selection_mask > hard_threshold)[0]
             

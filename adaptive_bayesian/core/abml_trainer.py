@@ -36,7 +36,7 @@ class ABMLTrainer:
         Train for one epoch
         
         Args:
-            train_data: (N, n_channels, time_length)
+            train_data: (N, in_channels, time_length)
             train_labels: (N,)
             support_pool_size: number of samples in support pool
             batch_size: number of query samples per batch
@@ -45,8 +45,7 @@ class ABMLTrainer:
             epoch_losses: dict of average losses
         """
         self.model.train()
-        self.optimizer.zero_grad()
-        epoch_losses = {}
+        
         
         # Sample query batch
         query_indices = torch.randperm(len(train_data))[:batch_size]
@@ -61,12 +60,15 @@ class ABMLTrainer:
         # Initialize fallback prototypes with entire training set
         with torch.no_grad():
             support_pool_representations = self.model.encoder.get_representation(
-                support_pool_data.to(self.device)
+                support_pool_data
             )
             self.model.inference_net.update_fallback_prototypes(
-                support_pool_representations, support_pool_labels.to(self.device)
+                support_pool_representations, support_pool_labels
             )
         
+        self.optimizer.zero_grad()
+        epoch_losses = {}
+
         # Forward pass
         logits, encoder_losses = self.model(
             support_pool_data, support_pool_labels,
@@ -97,9 +99,9 @@ class ABMLTrainer:
         Evaluate on test set
         
         Args:
-            train_data: (N_train, n_channels, time_length) - entire training set
+            train_data: (N_train, in_channels, time_length) - entire training set
             train_labels: (N_train,)
-            test_data: (N_test, n_channels, time_length)
+            test_data: (N_test, in_channels, time_length)
             test_labels: (N_test,)
             
         Returns:
@@ -128,7 +130,7 @@ class ABMLTrainer:
                     query_data, training=False
                 )
                 
-                pred = torch.argmax(logits).cpu().item()
+                pred = torch.argmax(logits, dim=1).cpu().item()
                 predictions.append(pred)
         
         predictions = np.array(predictions)

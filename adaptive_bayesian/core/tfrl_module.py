@@ -6,7 +6,7 @@ import numpy as np
 
 class SharedEncoder(nn.Module):
     """
-    Encoder shared for Time- and Frequency-respresentation
+    Encoder shared for Time- and Frequency-representation
     """
     def __init__(self, in_channels=22, time_length=1875, hidden_dim=128):
         super(SharedEncoder, self).__init__()
@@ -34,7 +34,7 @@ class TimeFrequencyVAE(nn.Module):
     Shared Encoder applied to time- and frequency-domain signals
     """
 
-    def __init__(self, in_channels=22, time_length=1875, num_classes=4, latent_dim=64, hidden_dim=128, device=None):
+    def __init__(self, in_channels=22, time_length=1875, num_classes=4, latent_dim=64, hidden_dim=128):
         """
         Args:
             in_channels: Number of EEG channels (22)
@@ -52,7 +52,6 @@ class TimeFrequencyVAE(nn.Module):
         self.num_classes = num_classes
         self.feature_dim = latent_dim * 2           #Concatenate z_T and z_F
         self.freq_bins = (time_length//2) + 1       #rfft bins
-        self.device = device
 
         # Shared Encoder for both Time- and Frequency-domain
         self.shared_encoder = SharedEncoder(in_channels, time_length, hidden_dim) # (B, hidden_dim)
@@ -98,7 +97,7 @@ class TimeFrequencyVAE(nn.Module):
             nn.Linear(hidden_dim, 1)
         )
     
-    def reparameterize(seld, mean, logvar):
+    def reparameterize(self, mean, logvar):
         """Reparameterization trick for VAE"""
         std = torch.exp(0.5 * logvar)
         eps = torch.randn_like(std)
@@ -232,8 +231,3 @@ class TimeFrequencyVAE(nn.Module):
             z_T_mean, _, z_F_mean, _ = self.encode(x)
             z = torch.cat([z_T_mean, z_F_mean], dim=1)
         return z
-
-
-
-
-

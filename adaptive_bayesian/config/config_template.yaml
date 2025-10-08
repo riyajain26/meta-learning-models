@@ -1,8 +1,35 @@
-# Dataset and Training Configuration
+# ABML Configuration File
+# Random seed for reproducibility
 random_seed: 42
 
-# EEG Signal Parameters
-in_channels: 22
-time_length: 1875
-num_classes: 4
+# Dataset parameters
+n_subjects: 15
+samples_per_subject: 100
+in_channels: 32          # Number of EEG channels
+time_length: 1044        # Length of time series
+num_classes: 4           # Number of classes
 
+# Model architecture parameters
+latent_dim: 64           # Latent dimension for time and frequency domains
+hidden_dim: 128          # Hidden layer dimension
+meta_param_rank: 32      # Rank for meta-parameter factorization
+
+# Task constructor parameters
+temperature_init: 1.0    # Initial Gumbel temperature
+temperature_min: 0.1     # Minimum Gumbel temperature
+
+# Training parameters
+n_epochs: 100            # Number of training epochs
+learning_rate: 0.001     # Learning rate
+batch_size: 8            # Number of query samples per batch
+support_pool_size: 100   # Number of samples in support pool during training
+
+# Loss weights
+alpha: 1.0               # Weight for TFRL loss
+beta: 0.1                # Weight for mutual information loss
+
+# Evaluation
+eval_every: 5            # Evaluate every N epochs
+
+# Model saving
+save_path: "checkpoints/abml_best.pth"  # Path to save best model
