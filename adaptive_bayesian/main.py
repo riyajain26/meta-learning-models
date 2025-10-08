@@ -107,6 +107,7 @@ def main(args):
         support_pool_size=config.get('support_pool_size', 100),
         batch_size=config.get('batch_size', 8),
         eval_every=config.get('eval_every', 5),
+        eval_batch_size=config.get('eval_batch_size', 16),
         save_path=config.get('save_path', 'abml_best.pth')
     )
 

@@ -29,7 +29,8 @@ alpha: 1.0               # Weight for TFRL loss
 beta: 0.1                # Weight for mutual information loss
 
 # Evaluation
-eval_every: 5            # Evaluate every N epochs
+eval_every: 20           # Evaluate every N epochs
+eval_batch_size: null    # Batch size for evaluation (larger = faster)
 
 # Model saving
 save_path: "checkpoints/abml_best.pth"  # Path to save best model

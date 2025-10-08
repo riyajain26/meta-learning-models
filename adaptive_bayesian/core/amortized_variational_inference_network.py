@@ -104,7 +104,6 @@ class AmortizedVariationalInference(nn.Module):
             all_representations: (M, feature_dim) - all training representations
             all_labels: (M,) - all training labels
         """
-        device = all_representations.device
         
         for c in range(self.num_classes):
             class_mask = (all_labels == c)

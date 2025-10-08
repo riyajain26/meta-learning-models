@@ -94,7 +94,7 @@ class ABMLTrainer:
         
         return epoch_losses
     
-    def evaluate(self, train_data, train_labels, test_data, test_labels):
+    def evaluate(self, train_data, train_labels, test_data, test_labels, eval_batch_size=16):
         """
         Evaluate on test set
         
@@ -120,18 +120,24 @@ class ABMLTrainer:
             
         predictions = []
         
+        # Determine batch size
+        if eval_batch_size is None:
+            # Try to process all at once, but respect memory limits
+            eval_batch_size = min(len(test_data), 128)  # Max 128 at once
+
         with torch.no_grad():
-            for i in range(len(test_data)):
-                query_data = test_data[i:i+1].to(self.device)
+            for i in range(0, len(test_data), eval_batch_size):
+                batch_end = min(i + eval_batch_size, len(test_data))
+                query_batch = test_data[i:batch_end].to(self.device)
                 
                 # Use entire training set as support pool during testing
                 logits, _ = self.model(
                     train_data.to(self.device), train_labels.to(self.device),
-                    query_data, training=False
+                    query_batch, training=False
                 )
                 
-                pred = torch.argmax(logits, dim=1).cpu().item()
-                predictions.append(pred)
+                preds = torch.argmax(logits, dim=1).cpu().numpy()
+                predictions.extend(preds)
         
         predictions = np.array(predictions)
         accuracy = (predictions == test_labels.numpy()).mean()
@@ -140,7 +146,7 @@ class ABMLTrainer:
     
     def train(self, train_data, train_labels, test_data, test_labels,
               n_epochs=100, support_pool_size=100, batch_size=8,
-              eval_every=5, save_path=None):
+              eval_every=5, eval_batch_size=16, save_path=None):
         """
         Complete training loop
         
@@ -188,7 +194,8 @@ class ABMLTrainer:
             if (epoch + 1) % eval_every == 0:
                 accuracy, _ = self.evaluate(
                     train_data, train_labels,
-                    test_data, test_labels
+                    test_data, test_labels,
+                    eval_batch_size
                 )
                 history['test_accuracy'].append(accuracy)
                 
