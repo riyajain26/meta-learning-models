@@ -94,7 +94,7 @@ class ABMLTrainer:
         
         return epoch_losses
     
-    def evaluate(self, train_data, train_labels, test_data, test_labels, eval_batch_size=16):
+    def evaluate(self, train_data, train_labels, test_data, test_labels, train_representations, eval_batch_size=16):
         """
         Evaluate on test set
         
@@ -110,9 +110,6 @@ class ABMLTrainer:
         """
         self.model.eval()
         with torch.no_grad():
-            train_representations = self.model.encoder.get_representation(
-                train_data.to(self.device)
-            )
             self.model.inference_net.update_fallback_prototypes(
                 train_representations,
                 train_labels.to(self.device)
@@ -170,6 +167,10 @@ class ABMLTrainer:
             'best_accuracy': 0.0
         }
         
+        train_representations = self.model.encoder.get_representation(
+            train_data.to(self.device)
+        )
+
         for epoch in range(n_epochs):
             # Update temperature
             self.model.task_constructor.update_temperature(epoch, n_epochs)
@@ -195,6 +196,7 @@ class ABMLTrainer:
                 accuracy, _ = self.evaluate(
                     train_data, train_labels,
                     test_data, test_labels,
+                    train_representations,
                     eval_batch_size
                 )
                 history['test_accuracy'].append(accuracy)
